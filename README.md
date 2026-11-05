@@ -25,3 +25,11 @@ Dos proyectos Netlify conectados al mismo GitHub: `nutre-convergencia-aura` sigu
 ## Recursos
 
 La portada de ensalada es una imagen generada con ImageGen para este proyecto. Prompt: fotografía editorial de ensalada de lentejas cocidas, tomate, pepino y espinaca, sobre piedra clara, luz natural cálida y espacio libre a la izquierda. El logo de Convergencia es el recurso existente del ecosistema. Supabase JS 2.57.4 se distribuye localmente en `public/vendor`, licencia MIT.
+
+## Verificación de la primera publicación
+
+Migración aplicada en Aura con autorización explícita del propietario el 05-11-2026. Lectura REST anónima verificada en las dos tablas, inicialmente vacías, y políticas de propietario/publicación activas. El asesor de seguridad no señaló hallazgos de Nutre.
+
+`npm run test:db` reproduce en Postgres local (PGlite) los controles de propietario, prevención de cambio de dueño, lectura pública, rechazo de escrituras anónimas, validación de contenido y separación dev/producción. Pruebas de interfaz con cuenta ficticia aislada: alimento, receta compartida, pasos de cocina, copia de plan y lista de compras. No se introdujeron datos de prueba en las cuentas reales.
+
+Imágenes adicionales generadas con ImageGen: tortilla de verduras y arroz con verduras, fotografías editoriales de comida casera con luz natural, cerámica clara y lino verde. Archivos en `public/assets/`.
