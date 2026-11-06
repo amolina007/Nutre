@@ -49,3 +49,6 @@ Fuentes revisadas el 05-11-2026:
 - https://www.cdc.gov/infant-toddler-nutrition/foods-and-drinks/choking-hazards.html
 
 Migración `20261106004752_nutre_dev_households.sql` autorizada explícitamente y aplicada solo a estructuras dev. La validación de documentos de producción queda intacta. Pruebas de interfaz con perfiles ficticios exclusivamente en servidor local; no se cargaron datos de salud reales. El escaneo de despensa por foto y la importación de boletas siguen siendo propuestas pendientes.
+
+### Importación visual (solo dev)
+Despensa → Importar foto o boleta. Una imagen JPG/PNG/WebP por análisis; revisión editable obligatoria. La función verifica Aura Auth, limita 5 solicitudes/minuto por IP y dominio y usa OpenAI gpt-4.1-mini mediante Netlify AI Gateway. Se requiere AI Gateway habilitado y créditos disponibles. No almacena imágenes ni registra respuestas en logs. No certifica inventario completo: no puede contar productos ocultos. Boletas sin cantidad explícita requieren completarla. Importaciones usan UUID estables por intento y upsert para evitar duplicar un reintento; una nueva importación requiere revisar duplicados. Categoría y origen se guardan en los documentos privados existentes; no requiere migración. PDF pendiente: usar foto o captura de la boleta.
