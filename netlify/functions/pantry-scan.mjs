@@ -1,9 +1,9 @@
 import OpenAI from 'openai';
 import {cleanItems,categories} from '../../public/scan-data.js';
 const reply=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
-export default async function handler(req){
+export default async function handler(req,context){
  if(req.method!=='POST')return reply({error:'Método no permitido.'},405);
- if(Netlify.env.get('BRANCH')!=='dev')return reply({error:'Disponible solo en desarrollo.'},404);
+ if(context?.site?.id!=='33e7f247-7635-4516-9147-fd42986d41ce')return reply({error:'Disponible solo en desarrollo.'},404);
  const authorization=req.headers.get('authorization');
  if(!authorization?.startsWith('Bearer '))return reply({error:'Inicia sesión para analizar.'},401);
  try{
