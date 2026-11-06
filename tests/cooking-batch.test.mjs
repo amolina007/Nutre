@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {batchTotals} from '../public/cooking-batch.js';
+test('people and days scale cooking quantities independently',()=>{assert.deepEqual(batchTotals(3,1,3),{people:3,days:3,daily:3,total:9});assert.equal(batchTotals(2,0.75,4).total,6);for(const args of [[0,1,1],[3,1,0],[3,1,8],[3,1,1.5],[20,3,1]])assert.throws(()=>batchTotals(...args));});

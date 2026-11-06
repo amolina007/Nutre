@@ -8,3 +8,4 @@
 .scan-item {border:1px solid var(--line);border-radius:14px;padding:16px;margin:18px 0;min-width:0}
 .scan-item legend{padding:0 6px}
 .scan-item input:not([type=checkbox]),.scan-item select{max-width:100%}
+#batch-form [hidden] {display:none!important}
