@@ -1,0 +1,15 @@
+import {PGlite} from '@electric-sql/pglite';import {readFile} from 'node:fs/promises';import assert from 'node:assert/strict';
+const db=new PGlite();await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to anon,authenticated;grant execute on function auth.uid() to anon,authenticated;insert into auth.users values ('00000000-0000-0000-0000-000000000001'),('00000000-0000-0000-0000-000000000002');`);
+for(const name of ['20261105211743_nutre_initial.sql','20261106004752_nutre_dev_households.sql'])await db.exec(await readFile('supabase/migrations/'+name,'utf8'));
+const actor=async n=>db.exec(`reset role;select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000${n}',false);set role authenticated`);
+const person={id:'00000000-0000-0000-0000-000000000010',alias:'Privado',ageMonths:8,ageRecordedOn:'2026-11-05',conditions:['diabetes1'],allergies:['leche'],notes:'Pauta privada',preferences:''};
+const payload={people:[person],meals:{}};await actor(1);await db.query('insert into nutre_dev_households(user_id,data) values(auth.uid(),$1)',[payload]);assert.equal((await db.query('select * from nutre_dev_households')).rows.length,1);
+await assert.rejects(()=>db.query("update nutre_dev_households set user_id='00000000-0000-0000-0000-000000000002'"));
+await actor(2);assert.equal((await db.query('select * from nutre_dev_households')).rows.length,0);assert.equal((await db.query('update nutre_dev_households set revision=2 returning user_id')).rows.length,0);
+await assert.rejects(()=>db.query("insert into nutre_dev_households(user_id,data) values ('00000000-0000-0000-0000-000000000001',$1)",[payload]));
+await actor(1);await assert.rejects(()=>db.query('update nutre_dev_households set data=$1',[{people:[{...person,ageMonths:-1}],meals:{}}]));
+const recipe={title:'Guiso',author:'Nutre',description:'',minutes:10,servings:2,ingredients:[{name:'Arroz',quantity:100,unit:'g'}],steps:['Cocinar']};
+const plan={title:'Plan',author:'Nutre',description:'',entries:[{day:0,meal:'Almuerzo',servings:.25,snapshot:recipe}]};await db.query("insert into nutre_dev_documents(user_id,kind,data,is_public) values(auth.uid(),'plan',$1,true)",[plan]);
+await assert.rejects(()=>db.query("insert into nutre_documents(user_id,kind,data) values(auth.uid(),'plan',$1)",[plan]));
+await db.exec('reset role;set role anon');await assert.rejects(()=>db.query('select * from nutre_dev_households'));const shared=(await db.query('select data from nutre_dev_documents')).rows;assert.equal(shared.length,1);assert(!JSON.stringify(shared).includes('Privado'));assert(!JSON.stringify(shared).includes('diabetes1'));
+await db.close();console.log('Private household RLS, ownership, malformed data, fractional dev meals and unchanged production checks passed.');

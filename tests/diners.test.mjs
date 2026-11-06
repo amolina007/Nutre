@@ -1,0 +1,11 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {assessment,groupSummary,publicRecipeSnapshot} from '../public/diners.js';
+const person=(extra={})=>({id:'p',alias:'Persona',ageMonths:360,conditions:[],allergies:[],preferences:'',notes:'',...extra});
+const recipe={title:'Receta',servings:2,ingredients:[{name:'Arroz',quantity:100,unit:'g'}],steps:['Preparar'],author:'Nutre'};
+test('counts diners independently from manually assigned portions',()=>{const people=[person(),person({id:'b',ageMonths:8})];const s=groupSummary(recipe,people,[{personId:'p',portions:1},{personId:'b',portions:0.25}]);assert.equal(s.count,2);assert.equal(s.total,1.25);assert(s.valid);assert(s.checks[1].items.some(i=>i.text.includes('textura')))});
+test('does not assign complementary meals below six months',()=>{assert(assessment(recipe,person({ageMonths:5})).blocked)});
+test('honey blocked before twelve months, not an automatic suitability label afterwards',()=>{const r={...recipe,ingredients:[{name:'Miel de abeja'}]};assert(assessment(r,person({ageMonths:11})).blocked);assert(!assessment(r,person({ageMonths:12})).blocked);assert(assessment(r,person({ageMonths:12})).items.length)});
+test('diabetes needs personal carbohydrate review, no automatic targets',()=>{const a=assessment(recipe,person({conditions:['diabetes1']}));assert(a.items.some(i=>i.text.includes('no calculados')));assert(!a.items.some(i=>i.text.includes('apta')))});
+test('milk derivatives trigger exclusion; absence of match is not safety confirmation',()=>{assert(assessment({...recipe,ingredients:[{name:'Queso fresco'}]},person({allergies:['leche']})).blocked);assert(assessment(recipe,person({allergies:['leche']})).items.some(i=>i.text.includes('no es exhaustiva')))});
+test('missing diner or blank/zero quantities invalidate group',()=>{assert(!groupSummary(recipe,[person()],[{personId:'p',portions:''}]).valid);assert(!groupSummary(recipe,[],[{personId:'p',portions:1}]).valid)});
+test('public recipe snapshots omit arbitrary private metadata',()=>{const s=publicRecipeSnapshot({...recipe,people:[person({conditions:['diabetes2']})],notes:'Private'});assert(!('people'in s));assert(!('notes'in s))});
