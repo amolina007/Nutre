@@ -55,3 +55,11 @@ Despensa → Importar foto o boleta. Una imagen JPG/PNG/WebP por análisis; revi
 
 ### Comensales y preparación de varios días (dev)
 Mis comensales permite buscar perfiles mediante `core.buscar_perfiles`, respetando permisos del servidor, y vincular su UUID/alias a un registro privado de Nutre. No importa información clínica ni altera el perfil Core. En una receta, «Elegir personas y días» admite cantidad de personas o perfiles seleccionados, porciones manuales y 1–7 días consecutivos desde hoy. Calcula ingredientes totales y guarda un plan privado con fechas y porciones diarias. Los días planificados no constituyen un plazo de conservación. Sin migración nueva. La búsqueda real requiere sesión iniciada; cálculo y guardado local comprobados con 3 personas durante 3 días.
+
+## Hogar y vínculo con Valora (dev)
+
+En Mi hogar y comensales se puede marcar quién vive contigo y seleccionar el hogar al cocinar. Cada comensal puede conectar explícitamente una ficha administrada por la misma cuenta y elegir un resumen finalizado que el profesional haya compartido. El resumen se consulta mediante `valora_mis_resumenes`, sin copiar su texto a documentos de Nutre ni enviarlo a IA. Solo se persisten identificadores privados y fecha de conexión en `nutre_dev_households`. Se puede cambiar o desconectar el vínculo.
+
+La conexión es de consulta: no calcula requerimientos ni verifica automáticamente el aporte nutricional de recetas. Un perfil público de Core no concede acceso a salud. Las fichas de otras cuentas necesitan un mecanismo de autorización específico que esta versión no implementa. Valora es una fuente compartida de datos reales incluso cuando Nutre está en dev; no se alteran registros de Valora.
+
+Verificación: 22 pruebas unitarias, validación local de RLS y de persistencia de los campos privados, y recorrido móvil/PC con datos ficticios (vincular pauta, recargar, seleccionar hogar excluyendo invitado, guardar dos días). La conexión con una pauta real requiere que su titular la seleccione y confirme en la interfaz.
