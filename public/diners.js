@@ -1,5 +1,5 @@
 import {normalize} from './domain.js';
-export const conditions={diabetes1:'Diabetes tipo 1',diabetes2:'Diabetes tipo 2',gestational:'Diabetes gestacional',other:'Otra necesidad de salud'};
+export const conditions={diabetes1:'Diabetes tipo 1',diabetes2:'Diabetes tipo 2',gestational:'Diabetes gestacional',hypertension:'Hipertensión',dyslipidemia:'Dislipidemia',other:'Otra necesidad de salud'};
 export const sources={diabetes:'https://www.cdc.gov/diabetes/healthy-eating/diabetes-meal-planning.html',infant:'https://www.who.int/publications/b/70981',avoid:'https://www.cdc.gov/infant-toddler-nutrition/foods-and-drinks/foods-and-drinks-to-avoid-or-limit.html',texture:'https://www.cdc.gov/infant-toddler-nutrition/foods-and-drinks/choking-hazards.html'};
 const synonyms={leche:['leche','queso','yogur','mantequilla','crema','caseina','suero'],huevo:['huevo','mayonesa','albumina'],mani:['mani','cacahuete','peanut'],gluten:['trigo','cebada','centeno','harina','pan','pasta','avena'],soya:['soya','soja','tofu'],pescado:['pescado','atun','salmon','merluza'],mariscos:['marisco','camaron','gamba','mejillon','almeja'],sesamo:['sesamo','ajonjoli','tahini']};
 export function ageLabel(p){if(p.ageMonths===null)return 'Edad sin registrar';return p.ageMonths<24?`${p.ageMonths} meses registrados`:`${Math.floor(p.ageMonths/12)} años registrados`}
@@ -11,6 +11,8 @@ export function assessment(r,p){const items=[];const add=(level,text,source)=>it
   if(names.some(n=>/azucar|jarabe|sal\b|embutido|salchicha/.test(n)))add('review','Revisa azúcares añadidos y sodio antes de adaptar esta preparación.',sources.avoid);
  }
  if(p.conditions.some(c=>['diabetes1','diabetes2','gestational'].includes(c)))add('review','Diabetes: confirmar porción y carbohidratos con la pauta individual. Nutre aún no dispone de composición nutricional validada: carbohidratos no calculados. No calcula insulina ni modifica tratamientos.',sources.diabetes);
+ if(p.conditions.includes('hypertension'))add('review','Hipertensión: revisa esta preparación con la pauta individual registrada.');
+ if(p.conditions.includes('dyslipidemia'))add('review','Dislipidemia: revisa esta preparación con la pauta individual registrada.');
  if(p.conditions.includes('other'))add('review','Revisa la indicación de salud registrada antes de elegir esta preparación.');
  if(p.allergies.length){const hits=[];for(const allergy of p.allergies){const a=normalize(allergy);const terms=synonyms[a]||[a];if(names.some(n=>terms.some(t=>n.includes(t))))hits.push(allergy)}
   if(hits.length)add('block',`Posible ingrediente incompatible con alergia o exclusión: ${hits.join(', ')}. Elige otra receta o revisa una adaptación con tu profesional.`);
