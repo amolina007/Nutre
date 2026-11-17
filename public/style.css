@@ -31,3 +31,6 @@ dialog:has(#batch-form),dialog:has(#scan-review){width:min(1080px,calc(100vw - 3
 [data-suggestions] article {margin:12px 0;padding:14px;border:1px solid var(--line);border-radius:14px}
 [data-valora-criteria] fieldset {min-width:0}
 #mobile-nav a {min-width:0;white-space:nowrap}
+
+.local-feed-float{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:1000;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border:1px solid #90b19c;border-radius:999px;background:#1c503a;color:#fff;box-shadow:0 6px 22px #0004;text-decoration:none;font-weight:700}
+@media(max-width:760px){.local-feed-float{bottom:calc(env(safe-area-inset-bottom) + 78px)}}
