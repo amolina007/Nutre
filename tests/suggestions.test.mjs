@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {suggestions} from '../public/suggestions.js';
+const person={ageMonths:360,conditions:[],allergies:[],notes:'',preferences:''};
+const recipe=(id,names)=>({id,title:id,ingredients:names.map(name=>({name}))});
+const rs=[recipe('salado',['Jamón','Queso']),recipe('legumbres',['Lentejas','Aceite de oliva']),recipe('avena',['Avena','Leche'])];
+test('combined needs rank ingredients transparently',()=>{const rows=suggestions(rs,[{...person,conditions:['hypertension','dyslipidemia']}]);assert.equal(rows[0].recipe.id,'legumbres');assert.equal(rows.at(-1).recipe.id,'salado');assert.match(rows[0].reasons.join(' '),/sodio sin calcular/)});
+test('whole group allergy and infant blocks precede ranking',()=>{assert.deepEqual(suggestions(rs,[person,{...person,ageMonths:4}]),[]);assert.ok(!suggestions(rs,[person,{...person,allergies:['leche']}]).some(r=>r.recipe.id==='avena'));assert.deepEqual(suggestions([recipe('miel',['Miel'])],[{...person,ageMonths:8}]),[])});
+test('explicit Valora criteria alter ranking and exclusions apply without parsing clinical prose',()=>{const rows=suggestions(rs,[person],{criteria:['fat'],exclude:['lentejas','leche']});assert.equal(rows.length,0);assert.equal(suggestions(rs,[person],{criteria:['fat']})[0].recipe.id,'legumbres')});
+test('no diners gives no personalized claims',()=>assert.deepEqual(suggestions(rs,[]),[]));
