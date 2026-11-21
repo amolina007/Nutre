@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {reserveStatus} from '../public/ideal-pantry.js';
+test('reserve scales by people and months, converts stock and excludes expired lots',()=>{const [r]=reserveStatus([{name:'Arroz',quantity:1,unit:'kg'}],[{name:'arroz',quantity:500,unit:'g'},{name:'Arroz',quantity:1,unit:'kg',expiry:'2000-01-01'},{name:'Arroz',quantity:10,unit:'ml'}],2,3);assert.equal(r.goal,6);assert.equal(r.have,.5);assert.equal(r.missing,5.5)});
+test('surplus caps coverage and never creates negative shopping',()=>{const [r]=reserveStatus([{name:'Avena',quantity:1,unit:'kg'}],[{name:'Avena',quantity:3,unit:'kg'}],1,1);assert.equal(r.coverage,1);assert.equal(r.missing,0)});
