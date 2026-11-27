@@ -15,9 +15,3 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
 
-# Canonical development URL; proxy upstream uses the Netlify hostname.
-[[redirects]]
-from = "https://dev.nutre.convergenciaaura.cl/*"
-to = "https://dev.convergenciaaura.cl/nutre/:splat"
-status = 301
-force = true
